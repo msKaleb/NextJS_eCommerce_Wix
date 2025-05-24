@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { delay } from "@/lib/utils";
 import { Suspense } from "react";
+import styles from "@/app/loading.module.css";
+import { getWixClient } from "@/lib/wix-client.base";
+import Product from "@/components/Product";
 
 export default function Home() {
   return (
@@ -34,7 +37,7 @@ export default function Home() {
           <div className="from-secondary absolute inset-0 bg-gradient-to-r via-transparent to-transparent" />
         </div>
       </div>
-      <Suspense fallback={<h1 className="text-center">Loading...</h1>}>
+      <Suspense fallback={<FeaturedFallback />}>
         <FeaturedProducts />
       </Suspense>
     </main>
@@ -43,5 +46,46 @@ export default function Home() {
 
 async function FeaturedProducts() {
   await delay(1000);
-  return <h1 className="text-center">Featured Products</h1>;
+  const wixClient = getWixClient();
+  const { collection } =
+    await wixClient.collections.getCollectionBySlug("featured-products");
+
+  if (!collection?._id) {
+    return null;
+  }
+
+  const featuredProducts = await wixClient.products
+    .queryProducts()
+    .hasSome("collectionIds", [collection._id])
+    .descending("lastUpdated")
+    .find();
+
+  if (!featuredProducts.items.length) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-5">
+      <h2 className="text-2xl font-bold">Featured Products</h2>
+      <div className="flex gap-5 grid-cols-2 flex-col sm:grid md:grid-cols-3 lg:grid-cols-4">
+        {featuredProducts.items.map((product) => (
+          <Product key={product._id} product={product} />
+        ))}
+      </div>
+    </div>
+  );
+  return <h1 className="text-center text-3xl">Featured Products</h1>;
+}
+
+function FeaturedFallback() {
+  return (
+    <div className="text-center">
+      <div className={styles["lds-ellipsis"]}>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  );
 }

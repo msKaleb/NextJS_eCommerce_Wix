@@ -14,7 +14,7 @@ import { redirects } from "@wix/redirects";
 import { reviews } from "@wix/reviews";
 
 export function getWixClient() {
-  createClient({
+  return createClient({
     modules: {
       products,
       collections,
