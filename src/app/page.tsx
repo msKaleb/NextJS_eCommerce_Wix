@@ -5,9 +5,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { delay } from "@/lib/utils";
 import { Suspense } from "react";
-import styles from "@/app/loading.module.css";
 import { getWixClient } from "@/lib/wix-client.base";
 import Product from "@/components/Product";
+import { Skeleton } from "@/components/ui/skeleton";
+// import styles from "@/app/loading.module.css";
 
 export default function Home() {
   return (
@@ -37,7 +38,7 @@ export default function Home() {
           <div className="from-secondary absolute inset-0 bg-gradient-to-r via-transparent to-transparent" />
         </div>
       </div>
-      <Suspense fallback={<FeaturedFallback />}>
+      <Suspense fallback={<FeaturedSkeleton />}>
         <FeaturedProducts />
       </Suspense>
     </main>
@@ -67,25 +68,38 @@ async function FeaturedProducts() {
   return (
     <div className="space-y-5">
       <h2 className="text-2xl font-bold">Featured Products</h2>
-      <div className="flex gap-5 grid-cols-2 flex-col sm:grid md:grid-cols-3 lg:grid-cols-4">
+      <div className="flex grid-cols-2 flex-col gap-5 sm:grid md:grid-cols-3 lg:grid-cols-4">
         {featuredProducts.items.map((product) => (
           <Product key={product._id} product={product} />
         ))}
       </div>
+      {/* following line is for checking all fields in the array */}
+      {/* <pre>{JSON.stringify(featuredProducts, null, 2)}</pre> */}
     </div>
   );
-  return <h1 className="text-center text-3xl">Featured Products</h1>;
 }
 
-function FeaturedFallback() {
+function FeaturedSkeleton() {
   return (
-    <div className="text-center">
-      <div className={styles["lds-ellipsis"]}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+    <>
+      <div className="flex grid-cols-2 flex-col gap-5 pt-12 sm:grid md:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} className="h-[30rem] w-full" />
+        ))}
       </div>
-    </div>
+    </>
   );
 }
+
+// function FeaturedFallback() {
+//   return (
+//     <div className="text-center">
+//       <div className={styles["lds-ellipsis"]}>
+//         <div></div>
+//         <div></div>
+//         <div></div>
+//         <div></div>
+//       </div>
+//     </div>
+//   );
+// }
