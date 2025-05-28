@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Lora } from "next/font/google";
 import "./globals.css";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -31,7 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${lora.className} antialiased`}>{children}</body>
+      <body className={`${lora.className} antialiased`}>
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
